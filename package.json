@@ -1,0 +1,57 @@
+{
+  "name": "inward-outward-portal",
+  "version": "1.0.0",
+  "description": "Inward-Outward Document Management System",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --enable-logging --disable-gpu",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "electron-builder"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "docx": "^9.1.0",
+    "exceljs": "^4.4.0",
+    "mammoth": "^1.9.0",
+    "natural": "^8.0.1",
+    "node-summarizer": "^1.0.7",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.13.0",
+    "sharp": "^0.33.5",
+    "sqlite3": "^5.1.7",
+    "tesseract.js": "^6.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^27.3.11",
+    "electron-builder": "^25.1.8"
+  },
+  "keywords": [
+    "electron",
+    "document",
+    "management",
+    "inward-outward"
+  ],
+  "author": "V&R",
+  "license": "ISC",
+  "build": {
+    "appId": "com.yourcompany.inwardoutward",
+    "productName": "Inward Outward Portal",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/app-icon.ico",
+      "publish": null
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Inward Outward Portal",
+      "deleteAppDataOnUninstall": true
+    }
+  }
+}
