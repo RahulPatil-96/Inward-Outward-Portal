@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inward-Outward Login</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
+    script-src 'self' 'unsafe-inline' 'nonce-xyz123'; 
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; 
+    img-src 'self' data:; 
+    font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+    
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-header">
+                <img src="../assets/logo.jpg" alt="Logo" class="logo">
+                <div class="title-group">
+                    <h1>पीसीपीसी इनवर्ड-आउटवर्ड पोर्टल</h1>
+                    <h2>PCPC Inward-Outward Portal</h2>
+                </div>
+                <img src="../assets/home.jpg" alt="home" class="home-icon" >
+            </div>
+        </header>
+
+        <div class="user-type">
+            <button class="tab-btn" data-type="user" id="user-btn">
+                <i class="fas fa-user"></i> User Login
+            </button>
+            <button class="tab-btn active" data-type="admin" id="admin-btn">
+                <i class="fas fa-user-shield"></i> Admin Login
+            </button>
+        </div>
+
+        <form id="loginForm" class="form-container">
+            <div class="form-row">
+                <label for="username">
+                    <i class="fas fa-user"></i> Username
+                </label>
+                <div class="username-container">
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <i class="fas fa-eye" id="togglePassword"></i>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="remember-me-container">
+                    <label class="remember-me-label">
+                        <input type="checkbox" id="rememberMe">
+                        <span>
+                            <i class="fas fa-check-square"></i> Remember me
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+    </div>
+
+    <script src="../render.js"></script>
+</body>
+</html>

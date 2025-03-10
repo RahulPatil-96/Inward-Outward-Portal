@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Document</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
+    script-src 'self' 'unsafe-inline' 'nonce-xyz123'; 
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; 
+    img-src 'self' data:; 
+    font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="logo-header">
+                <img src="../assets/logo.jpg" alt="Logo" class="logo">
+                <div class="title-group">
+                    <h1>पीसीपीसी इनवर्ड-आउटवर्ड पोर्टल</h1>
+                    <h2>PCPC Inward-Outward Portal</h2>
+                </div>
+                <img src="../assets/home.jpg" alt="Home" class="home-icon" data-page="dashboard.html">
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h2 class="page-title"><i class="fas fa-edit"></i> Edit Document</h2>
+            
+            <!-- Search Form -->
+            <form id="edit-form" class="edit-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="document-number">
+                            <i class="fas fa-id-card"></i> Document Number
+                        </label>
+                        <input type="text" 
+                               id="document-number" 
+                               name="document-number" 
+                               pattern="^(IN|OUT)-\d{3,}$" 
+                               title="Format: IN-123 or OUT-456" 
+                               placeholder="Enter document number"
+                               required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <button type="button" class="submit-btn" id="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                
+                <!-- Document Details Section (Initially Hidden) -->
+                <div id="document-details" class="document-details" style="display:none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="flow-type">
+                                <i class="fas fa-exchange-alt"></i> Document Flow
+                            </label>
+                            <select id="flow-type" name="flow-type" disabled>
+                                <option value="">Select Flow Type</option>
+                                <option value="inward">Inward</option>
+                                <option value="outward">Outward</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="document-type">
+                                <i class="fas fa-file-alt"></i> Document Type
+                            </label>
+                            <select id="document-type" name="document-type">
+                                <option value="">Select Type</option>
+                                <option value="letter">Letter</option>
+                                <option value="report">Report</option>
+                                <option value="memo">Memo</option>
+                                <option value="circular">Circular</option>
+                                <option value="notice">Notice</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input type="text" id="custom-document-type" placeholder="Enter custom document type" style="display: none;">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipient">
+                                <i class="fas fa-user"></i> Recipient
+                            </label>
+                            <select id="recipient" name="recipient">
+                                <option value="">Select</option>
+                                <option value="CP Sir">CP Sir</option>
+                                <option value="DCP Sir">DCP Sir</option>
+                                <option value="ACP Sir">ACP Sir</option>
+                                <option value="Local">Local</option>
+                                <option value="external">External</option>
+                                <option value="Pimpri PS">Pimpri Police Station</option>
+                                <option value="Sant Tukaram Nagar PS">Sant Tukaram Nagar Police Station</option>
+                                <option value="Bhosari PS">Bhosari Police Station</option>
+                                <option value="Dapodi PS">Dapodi Police Station</option>
+                                <option value="Sangvi PS">Sangvi Police Station</option>
+                                <option value="Chinchwad PS">Chinchwad Police Station</option>
+                                <option value="Nigdi PS">Nigdi Police Station</option>
+                                <option value="Ravet PS">Ravet Police Station</option>
+                                <option value="Dehuroad PS">Dehuroad Police Station</option>
+                                <option value="Talegoan Dabhade PS">Talegoan Dabhade Police Station</option>
+                                <option value="Shirgaon PS">Shirgaon Police Station</option>
+                                <option value="Talegoan MIDC PS">Talegoan MIDC Police Station</option>
+                                <option value="Wakad PS">Wakad Police Station</option>
+                                <option value="Kalewadi PS">Kalewadi Police Station</option>
+                                <option value="Hinjewadi PS">Hinjewadi Police Station</option>
+                                <option value="Bavdhan PS">Bavdhan Police Station</option>
+                                <option value="Chakan PS">Chakan Police Station</option>
+                                <option value="Mahalunge PS">Mahalunge Police Station</option>
+                                <option value="Alandi PS">Alandi Police Station</option>
+                                <option value="Dighi PS">Dighi Police Station</option>
+                                <option value="Chikhali PS">Chikhali Police Station</option>
+                                <option value="Bhosari MIDC PS">Bhosari MIDC Police Station</option>
+                                <option value="Cyber">Cyber</option>
+                                <option value="Court">Court</option>
+                                <option value="Zone 1">Zone 1</option>
+                                <option value="Zone 2">Zone 2</option>
+                                <option value="Zone 3">Zone 3</option>
+                                <option value="Bank">Bank</option>
+                                <option value="Other District">Other District</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input type="text" id="custom-recipient" placeholder="Enter custom recipient" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">
+                                <i class="fas fa-calendar-alt"></i> Date
+                            </label>
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">
+                                <i class="fas fa-clock"></i> Time
+                            </label>
+                            <div class="time-container">
+                                <input type="time" id="time" required>
+                                <select id="am-pm" class="time-select" required>
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                            </div>
+                        </div>                        
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="description">
+                                <i class="fas fa-info-circle"></i> Description
+                            </label>
+                            <textarea id="description" 
+                                      name="description" 
+                                      rows="4" 
+                                      placeholder="Enter document description"
+                                      required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="current-file">
+                                <i class="fas fa-file"></i> Current File
+                            </label>
+                            <div id="current-file-display" class="file-display">
+                                <div id="current-file-preview" class="file-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="new-file">
+                                <i class="fas fa-upload"></i> Upload New File
+                            </label>
+                            <div class="file-input-group">
+                                <input type="file" 
+                                       id="new-file" 
+                                       name="new-file" 
+                                       accept=".pdf,.docx,.doc,.jpg,.jpeg,.png">
+                                <div id="file-preview" class="file-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <button type="submit" class="action-btn" id="update-btn">
+                            <i class="fas fa-save"></i> Update Document
+                        </button>
+                        <button type="button" class="action-btn" id="cancel-btn">
+                            <i class="fas fa-times-circle"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+    
+
+    <!-- Scripts -->
+    <script src="../render.js"></script>
+</body>
+</html>
