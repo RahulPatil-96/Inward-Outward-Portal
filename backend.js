@@ -2,10 +2,8 @@ const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
-const pdfParser = require('pdf-parse');
-const mammoth = require('mammoth');
-const XLSX = require('xlsx');
-const { spawn } = require('child_process');
+const ExcelJS = require('exceljs');
+const PDFDocument = require('pdfkit');
 
 class DatabaseManager {
     constructor(dbPath, uploadDir, downloadsDir) {
@@ -41,6 +39,95 @@ class DatabaseManager {
                 });
             });
         });
+    }
+
+    setupBackupScheduler() {
+        const BACKUP_INTERVAL = 24 * 60 * 60 * 1000;
+        const BACKUP_DIR = 'D:\\in-out-backup';
+        const LAST_BACKUP_FILE = path.join(app.getPath('userData'), 'last-backup-time.json');
+    
+        const ensureDirectoryExists = (dirPath) => {
+            if (!fs.existsSync(dirPath)) {
+                fs.mkdirSync(dirPath, { recursive: true });
+                console.log(`Directory created: ${dirPath}`);
+            }
+        };
+    
+        const getLastBackupTime = () => {
+            if (fs.existsSync(LAST_BACKUP_FILE)) {
+                const data = JSON.parse(fs.readFileSync(LAST_BACKUP_FILE, 'utf8'));
+                return new Date(data.lastBackupTime).getTime();
+            }
+            return 0; // No previous backup
+        };
+    
+        const saveBackupTime = () => {
+            ensureDirectoryExists(BACKUP_DIR);
+            const now = new Date().toISOString();
+            fs.writeFileSync(LAST_BACKUP_FILE, JSON.stringify({ lastBackupTime: now }), 'utf8');
+            console.log('Backup time saved.');
+        };
+    
+        const createBackup = () => {
+            console.log('Starting backup process...');
+            try {
+                ensureDirectoryExists(BACKUP_DIR);
+    
+                const timestamp = new Date().toISOString().replace(/:/g, '-');
+                const backupFolder = path.join(BACKUP_DIR, `backup-${timestamp}`);
+                ensureDirectoryExists(backupFolder);
+    
+                // Backup database
+                const dbBackupPath = path.join(backupFolder, 'data.db');
+                if (fs.existsSync(this.dbPath)) {
+                    fs.copyFileSync(this.dbPath, dbBackupPath);
+                    console.log(`Database backed up to: ${dbBackupPath}`);
+                } else {
+                    console.error('Database file not found:', this.dbPath);
+                }
+    
+                // Backup uploaded files
+                const uploadedFilesBackupDir = path.join(backupFolder, 'uploaded-files');
+                if (fs.existsSync(this.uploadDir)) {
+                    ensureDirectoryExists(uploadedFilesBackupDir);
+                    fs.cpSync(this.uploadDir, uploadedFilesBackupDir, { recursive: true });
+                    console.log(`Uploaded files backed up to: ${uploadedFilesBackupDir}`);
+                } else {
+                    console.error('Uploaded files directory not found:', this.uploadDir);
+                }
+    
+                saveBackupTime();
+                retainLatestBackups();
+            } catch (error) {
+                console.error('Error during backup:', error);
+            }
+        };
+    
+        const retainLatestBackups = () => {
+            const backupFolders = fs.readdirSync(BACKUP_DIR)
+                .map(folder => path.join(BACKUP_DIR, folder))
+                .filter(folder => fs.lstatSync(folder).isDirectory());
+    
+            backupFolders.sort((a, b) => fs.statSync(b).mtime - fs.statSync(a).mtime);
+    
+            if (backupFolders.length > 3) {
+                const foldersToDelete = backupFolders.slice(3);
+                foldersToDelete.forEach(folder => {
+                    fs.rmSync(folder, { recursive: true, force: true });
+                    console.log(`Old backup deleted: ${folder}`);
+                });
+            }
+        };
+    
+        // Periodically check if backup is needed (every hour)
+        setInterval(() => {
+            const lastBackupTime = getLastBackupTime();
+            const now = Date.now();
+    
+            if (now - lastBackupTime >= BACKUP_INTERVAL) {
+                createBackup();
+            }
+        }, 24 * 60 * 60 * 1000); // Check every hour
     }
 
     async createTables() {
@@ -121,6 +208,40 @@ class DatabaseManager {
                         { success: true, user } : 
                         { success: false, message: 'Incorrect password' }
                     );
+                }
+            );
+        });
+    }
+
+    async insertDocument(documentData) {
+        const fileExtension = path.extname(documentData.fileName);
+        const newFileName = `${documentData.documentNumber}${fileExtension}`;
+        const newFilePath = path.join(this.uploadDir, newFileName); // Use correct upload directory    
+        await fs.promises.copyFile(documentData.filePath, newFilePath);    
+        const query = `INSERT INTO documents (
+            flow_type, document_number, date, time, 
+            recipient, document_type, file_name, 
+            file_path, description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`;    
+        return new Promise((resolve, reject) => {
+            this.db.run(
+                query,
+                [
+                    documentData.flowType,
+                    documentData.documentNumber,
+                    documentData.date,
+                    documentData.time,
+                    documentData.recipient,
+                    documentData.documentType,
+                    newFileName,   // Save the new file name
+                    newFilePath,   // Save the correct file path
+                    documentData.description,
+                ],
+                function (err) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve({ success: true, id: this.lastID });
                 }
             );
         });
