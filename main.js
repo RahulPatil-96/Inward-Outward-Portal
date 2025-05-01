@@ -74,32 +74,41 @@ class ElectronApp {
     }
 
     createMainWindow() {
-        try {
-            this.mainWindow = new BrowserWindow({
-                width: 1200,
-                height: 800,
-                webPreferences: {
-                    preload: path.join(__dirname, 'preload.js'),
-                    contextIsolation: true,
-                    nodeIntegration: false,
-                    cache: true
-                },
-            });
+        this.mainWindow = new BrowserWindow({
+            width: 1200,
+            height: 800,
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js'),
+                contextIsolation: true,
+                nodeIntegration: true,
+                cache:true,
+            },
+        });
 
-            const loginPath = path.join(__dirname, 'templates', 'login.html');
-            console.log(`Loading login file: ${loginPath}`);
+        this.mainWindow.loadFile(path.join(__dirname, 'templates', 'login.html')).catch((err) => {
+            console.error('Failed to load login.html:', err);
+        });
 
-            this.mainWindow.loadFile(loginPath).catch((err) => {
-                console.error(`Failed to load login.html: ${err}`);
-            });
-
-            this.mainWindow.setMenuBarVisibility(false);
-            this.mainWindow.on('closed', () => {
-                this.mainWindow = null;
-            });
-        } catch (error) {
-            console.error(`Error creating main window: ${error}`);
-        }
+        this.mainWindow.setMenuBarVisibility(false);
+        this.mainWindow.on('close', async (e) => {
+            if (this.checkpointInProgress) return;
+            this.checkpointInProgress = true;
+        
+            e.preventDefault(); // prevent closing for now
+        
+            console.log('[INFO] Window close detected. Running WAL checkpoint...');
+        
+            try {
+                await this.dbManager.checkpointAndClose();
+                console.log('[INFO] WAL checkpoint completed. Closing now...');
+            } catch (err) {
+                console.error("[ERROR] Checkpoint process failed:", err.message);
+            }
+        
+            this.mainWindow.destroy();
+            app.quit();
+        });
+        
     }
 
     setupIpcHandlers() {
@@ -112,13 +121,12 @@ class ElectronApp {
             }
         });
 
-        ipcMain.handle('insertDocument', async (_, formData) => {
+        ipcMain.handle('insertDocument', async (_, documentData) => {
             try {
-                const result = await this.dbManager.processAndStoreDocument(formData);
-                return { success: true, data: result };
+                return await this.dbManager.insertDocument(documentData); // Pass everything to backend.js
             } catch (error) {
-                console.error(`Error processing document: ${error}`);
-                return { success: false, message: 'Document processing failed.' };
+                console.error(`Error inserting document: ${error}`);
+                return { success: false, message: 'Document insertion failed.' };
             }
         });
 
