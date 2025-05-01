@@ -12,9 +12,133 @@
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; 
     img-src 'self' data:; 
     font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+
+    <style nonce="xyz123">
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 9999;
+        }
     
+        .loading-text {
+            color: white;
+            font-size: 14pt;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+    
+        .dot {
+            margin-left: 3px;
+            animation: blink 1.5s infinite;
+            opacity: 0;
+        }
+    
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+    
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+    
+        .loading-bar-background {
+            --height: 30px;
+            width: 200px;
+            height: var(--height);
+            background-color: #212121;
+            box-shadow: inset -2px 2px 4px #0c0c0c;
+            border-radius: calc(var(--height) / 2);
+            padding: 5px;
+            box-sizing: border-box;
+        }
+    
+        .loading-bar {
+            --height: 20px;
+            height: var(--height);
+            width: 0%;
+            background: linear-gradient(0deg, #de4a0f 0%, #f9c74f 100%);
+            border-radius: calc(var(--height) / 2);
+            animation: loading 4s ease-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+    
+        .white-bars-container {
+            position: absolute;
+            display: flex;
+            gap: 18px;
+            height: 100%;
+            align-items: center;
+        }
+    
+        .white-bar {
+            width: 10px;
+            height: 45px;
+            background: linear-gradient(-45deg, #fff 0%, rgba(255,255,255,0) 70%);
+            opacity: 0.3;
+            transform: rotate(45deg);
+        }
+    
+        .flipping-image {
+            width: 45%;
+            animation: flip 5s linear infinite;
+            transform-origin: center;
+            background: transparent;
+        }
+    
+        .hidden {
+            display: none;
+        }
+    
+        @keyframes loading {
+            0% { width: 0; }
+            80%, 100% { width: 100%; }
+        }
+    
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+    
+        @keyframes flip {
+            0% { transform: rotateY(-45deg); }
+            50% { transform: rotateY(45deg); }
+            100% { transform: rotateY(-45deg); }
+        }
+    </style>
 </head>
 <body>
+    <div class="loader">
+        <img src="../assets/logo.jpg" alt="Flipping Image" class="flipping-image"> <!-- Add your image source here -->
+        <div class="loading-text">
+            Loading<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+        </div>
+        <div class="loading-bar-background">
+            <div class="loading-bar">
+                <div class="white-bars-container <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                    <div class="white-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <header class="header">
             <div class="logo-header">
@@ -73,6 +197,15 @@
         </form>
     </div>
 
+    <script nonce="xyz123">
+        window.onload = function() {
+            setTimeout(function() {
+                document.querySelector('.loader').style.display = 'none';
+                document.querySelector('.container').classList.remove('hidden');
+            }, 3000);
+        };
+    </script>
+    
     <script src="../render.js"></script>
 </body>
 </html>
