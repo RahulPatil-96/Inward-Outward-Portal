@@ -599,3 +599,48 @@ body {
         transform: translateY(0);
     }
 }
+
+.table-container {
+    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+    margin: 0; /* Remove negative margins */
+    padding: 0; /* Remove padding */
+    width: 100%; /* Ensure it takes full width */
+    max-height: 400px; /* Set a max height for the table container */
+  }
+  
+  .results-table {
+    width: 100%; /* Ensure table takes full width */
+    border-collapse: collapse; /* Collapse borders for a cleaner look */
+    table-layout: auto; /* For content-based column widths */
+  }
+  
+  .results-table th, .results-table td {
+    border: 1px solid #ddd; /* Add border to table cells */
+    padding: 8px; /* Add padding for table cells */
+    text-align: left; /* Align text to the left */
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+  
+  .results-table th {
+    background-color: #f2f2f2; /* Header background color */
+    font-weight: bold; /* Bold header text */
+    position: sticky; /* Make header row sticky */
+    top: 0; /* Stick to the top of the container */
+    z-index: 2; /* Ensure header is above other content */
+  }
+  
+  .results-table th:first-child,
+  .results-table th:last-child{
+     z-index: 3;
+  }
+  
+  .results-table tr:hover {
+    background-color: #f1f1f1; /* Hover effect for rows */
+  }
+  
+  /* Ensure fixed columns maintain hover effect */
+  .results-table tr:hover td:first-child,
+  .results-table tr:hover td:last-child {
+    background-color: #f1f1f1; /* Hover effect for fixed columns */
+  }
