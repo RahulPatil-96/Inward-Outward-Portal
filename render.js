@@ -302,9 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
     
             try {
-                
-                
-
                 const result = await window.electronAPI.insertDocument(formData);
                 if (result.success) {
                     Utils.showNotification('Document registered successfully!', 'success');
@@ -316,9 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 Utils.showNotification('Failed to register document.', 'error');
             }
         });
-    };
-    
-        
+    }; 
 
     const setupEditDocumentPage = () => {
         const editForm = document.getElementById('edit-form');
@@ -553,10 +548,130 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadButton.style.display = 'none'; // Hide download button on reset
         });
     
-        // Search form submission
+        function addLoaderStyles() {
+            if (!document.getElementById('loader-styles')) {
+                const style = document.createElement('style');
+                style.id = 'loader-styles';
+                style.textContent = `
+                    .loader {
+                        --background: linear-gradient(135deg, #23C4F8, #275EFE);
+                        --shadow: rgba(39, 94, 254, 0.28);
+                        --text: #6C7486;
+                        --page: rgba(255, 255, 255, 0.36);
+                        --page-fold: rgba(255, 255, 255, 0.52);
+                        --duration: 3s;
+                        width: 200px;
+                        height: 140px;
+                        position: relative;
+                        margin: 20px auto;
+                    }
+        
+                    .loader:before, .loader:after {
+                        --r: -6deg;
+                        content: "";
+                        position: absolute;
+                        bottom: 8px;
+                        width: 120px;
+                        top: 80%;
+                        box-shadow: 0 16px 12px var(--shadow);
+                        transform: rotate(var(--r));
+                    }
+        
+                    .loader:before { left: 4px; }
+                    .loader:after { --r: 6deg; right: 4px; }
+        
+                    .loader div {
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 13px;
+                        position: relative;
+                        z-index: 1;
+                        perspective: 600px;
+                        box-shadow: 0 4px 6px var(--shadow);
+                        background-image: var(--background);
+                    }
+        
+                    .loader div ul {
+                        margin: 0;
+                        padding: 0;
+                        list-style: none;
+                        position: relative;
+                    }
+        
+                    .loader div ul li {
+                        --r: 180deg;
+                        --o: 0;
+                        --c: var(--page);
+                        position: absolute;
+                        top: 10px;
+                        left: 10px;
+                        transform-origin: 100% 50%;
+                        color: var(--c);
+                        opacity: var(--o);
+                        transform: rotateY(var(--r));
+                        animation: var(--duration) ease infinite;
+                    }
+        
+                    .loader div ul li:nth-child(2) { --c: var(--page-fold); animation-name: page-2; }
+                    .loader div ul li:nth-child(3) { --c: var(--page-fold); animation-name: page-3; }
+                    .loader div ul li:nth-child(4) { --c: var(--page-fold); animation-name: page-4; }
+                    .loader div ul li:nth-child(5) { --c: var(--page-fold); animation-name: page-5; }
+        
+                    .loader div ul li svg {
+                        width: 90px;
+                        height: 120px;
+                        display: block;
+                    }
+        
+                    .loader div ul li:first-child { --r: 0deg; --o: 1; }
+                    .loader div ul li:last-child { --o: 1; }
+        
+                    .loader span {
+                        display: block;
+                        left: 0;
+                        right: 0;
+                        top: 100%;
+                        margin-top: 20px;
+                        text-align: center;
+                        color: var(--text);
+                    }
+        
+                    @keyframes page-2 {
+                        0% { transform: rotateY(180deg); opacity: 0; }
+                        20% { opacity: 1; }
+                        35%, 100% { opacity: 0; }
+                        50%, 100% { transform: rotateY(0deg); }
+                    }
+                    @keyframes page-3 {
+                        15% { transform: rotateY(180deg); opacity: 0; }
+                        35% { opacity: 1; }
+                        50%, 100% { opacity: 0; }
+                        65%, 100% { transform: rotateY(0deg); }
+                    }
+                    @keyframes page-4 {
+                        30% { transform: rotateY(180deg); opacity: 0; }
+                        50% { opacity: 1; }
+                        65%, 100% { opacity: 0; }
+                        80%, 100% { transform: rotateY(0deg); }
+                    }
+                    @keyframes page-5 {
+                        45% { transform: rotateY(180deg); opacity: 0; }
+                        65% { opacity: 1; }
+                        80%, 100% { opacity: 0; }
+                        95%, 100% { transform: rotateY(0deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // Call this once on page load
+        addLoaderStyles();
+        
+        // Search form logic
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-    
+        
             const filters = {
                 documentNumber: document.getElementById('document-number').value,
                 flowType: flowTypeSelect.value,
@@ -565,15 +680,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 dateFrom: document.getElementById('date-from').value,
                 dateTo: document.getElementById('date-to').value,
             };
-    
+        
             const downloadSection = document.querySelector('.download-section');
-            downloadSection.style.display = 'block'; // Show the download section
-    
+            downloadSection.style.display = 'block';
+        
+            searchResults.innerHTML = `
+                <div class="loader">
+                    <div>
+                        <ul>
+                            ${[...Array(5)].map(() => `
+                                <li>
+                                    <svg fill="currentColor" viewBox="0 0 90 120">
+                                        <path d="M90,0 L90,120 L11,120 C4.92,120 0,115.08 0,109 L0,11 C0,4.92 4.92,0 11,0 H90 Z M71.5,81 H18.5 C17.12,81 16,82.12 16,83.5 C16,84.83 17.03,85.91 18.34,85.99 H71.5 C72.88,86 74,84.88 74,83.5 C74,82.17 72.97,81.09 71.66,81.01 Z M71.5,57 H18.5 C17.12,57 16,58.12 16,59.5 C16,60.83 17.03,61.91 18.34,61.99 H71.5 C72.88,62 74,60.88 74,59.5 C74,58.12 72.88,57 71.5,57 Z M71.5,33 H18.5 C17.12,33 16,34.12 16,35.5 C16,36.83 17.03,37.91 18.34,37.99 H71.5 C72.88,38 74,36.88 74,35.5 C74,34.12 72.88,33 71.5,33 Z"/>
+                                    </svg>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    <span>Loading</span>
+                </div>
+            `;
+        
             try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 const documents = await window.electronAPI.fetchDocuments(filters);
                 displaySearchResults(documents);
-    
-                // Show the download button after results are displayed
+        
                 if (documents.length > 0) {
                     downloadButton.style.display = 'block';
                 } else {
@@ -583,6 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 Utils.showNotification('Error searching documents.', 'error');
             }
         });
+        
     
         const displaySearchResults = (documents) => {
             searchResults.innerHTML = ''; // Clear any previous search results
@@ -593,6 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
                 const headerRow = document.createElement('tr');
                 headerRow.innerHTML = `
+                    <th>Sr no.</th>
                     <th>Doc No</th>
                     <th>Date & Time</th>
                     <th>Type</th>
@@ -605,6 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 documents.forEach((doc) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td>${documents.indexOf(doc) + 1}</td>
                         <td>${doc.document_number}</td>
                         <td>${doc.date} ${doc.time}</td>
                         <td>${doc.document_type}</td>
@@ -612,10 +747,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${doc.description}</td>
                         <td>
                             <button class="view-doc" data-id="${doc.id}" data-file="${doc.file_path}">
-                                <i class="fa fa-eye"></i> View
+                                <i class="fa fa-eye"></i> 
                             </button>
                             <button class="approve-doc" data-id="${doc.id}">
-                                <i class="fa fa-thumbs-up"></i> Approve
+                                <i class="fa fa-thumbs-up"></i> 
                             </button>
                             <button class="delete-doc" data-id="${doc.id}">
                                 <i class="fa fa-trash"></i>
